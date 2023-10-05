@@ -1,13 +1,15 @@
 //import logo from './logo.svg';
 
 import './App.css';
-import pokemon from './pokemon.json'
 import React from 'react'
+import styled from "@emotion/styled"
+import { Button } from '@material-ui/core';
+
 const PokemonRaw = ({pokemonn , onSelect}) => ( 
 <tr>
   <td>{pokemonn.name.english}</td>
   <td>{pokemonn.type.join(",")}</td>
-  <td><button onClick={()=> onSelect(pokemonn)}>Select!</button></td>
+  <td><Button color="secondary" variant="contained" onClick={()=> onSelect(pokemonn)}>Select!</Button></td>
 </tr>);
 
 const PokemonInfo = ({name , base}) => ( 
@@ -26,14 +28,35 @@ const PokemonInfo = ({name , base}) => (
   </div>
 );
 
+const Title=styled.h1`
+text-align: center;
+color: pink;
+`;
+
+const TwoColomns=styled.div`
+display: grid;
+grid-template-columns: 30% 70%;
+grid-column-gap: 1rem;
+`;
+const Input=styled.input`
+width: 80%;
+font-size: x-large;
+`;
 function App() {
   const [filter,filterset] = React.useState("");
   const [selected,setselected]= React.useState(null)
+  const[pokemon,setpokemon]=React.useState([])
+
+  React.useEffect(()=>{
+    fetch("http://localhost:3000/starting-react/pokemon.json")
+    .then((res)=>(res.json()))
+    .then((data)=>(setpokemon(data)));
+  },[]);
   return (
     <div className="App" style={{margin:"auto",paddingTop: 30}}>
-      <h1 className="title">pokemon test</h1>
-      <input value={filter} onChange={(e) => (filterset(e.target.value))}/>
-      
+      <Title>pokemon test</Title>
+      <Input value={filter} onChange={(e) => (filterset(e.target.value))}/>
+      <TwoColomns>
       <table width="70%">
         <thead>
           <tr>
@@ -50,12 +73,14 @@ function App() {
           }
         </tbody>
       </table>
+     
       {selected && (
       <div>
         <h1>{selected.name.english}</h1>
         <PokemonInfo {...selected} />
       </div>
       )}
+       </TwoColomns>
     </div>
   );
 }
